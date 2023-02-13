@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using System;
 
@@ -25,7 +26,10 @@ namespace Api.Server.ChuBao
             services.AddDbContext<AppDbContext>(
                 options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ChuBaoDB")));
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(api =>
+            {
+                api.SwaggerDoc("v1", new OpenApiInfo { Title = "Service For ChuBao", Version = "v1" });
+            });
 
         }
 
