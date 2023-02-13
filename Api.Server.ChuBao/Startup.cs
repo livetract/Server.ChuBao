@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
+using System;
 
 namespace Api.Server.ChuBao
 {
@@ -47,6 +49,11 @@ namespace Api.Server.ChuBao
             {
                 endpoints.MapControllers();
             });
+        }
+
+        internal void ConfigureServices(object services)
+        {
+            throw new NotImplementedException();
         }
     }
 }
