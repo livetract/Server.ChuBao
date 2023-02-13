@@ -22,9 +22,14 @@ namespace Api.Server.ChuBao.Repositories
             this._context = context;
             Table = context.Set<T>();
         }
-        public async Task Delete(object id)
+        public async Task DeleteAsync(object id)
         {
             var entity = await Table.FindAsync(id);
+            Table.Remove(entity);
+        }
+
+        public void Delete(T entity)
+        {
             Table.Remove(entity);
         }
 
@@ -33,7 +38,7 @@ namespace Api.Server.ChuBao.Repositories
             Table.RemoveRange(entities);
         }
 
-        public async Task<T> Get(
+        public async Task<T> GetAsync(
             Expression<Func<T, bool>> expression = null, 
             List<string> includes = null)
         {
@@ -48,7 +53,7 @@ namespace Api.Server.ChuBao.Repositories
             return await query.AsNoTracking().FirstOrDefaultAsync(expression);
         }
 
-        public async Task<IList<T>> GetAll(
+        public async Task<IList<T>> GetAllAsync(
             Expression<Func<T, bool>> expression = null, 
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, 
             List<string> includes = null)
@@ -76,12 +81,12 @@ namespace Api.Server.ChuBao.Repositories
             return await query.AsNoTracking().ToListAsync();
         }
 
-        public async Task Insert(T entity)
+        public async Task InsertAsync(T entity)
         {
             await Table.AddAsync(entity);
         }
 
-        public async Task InsertRange(IEnumerable<T> entities)
+        public async Task InsertRangeAsync(IEnumerable<T> entities)
         {
             await Table.AddRangeAsync(entities);
         }

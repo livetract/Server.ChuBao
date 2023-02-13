@@ -8,16 +8,17 @@ namespace Api.Server.ChuBao.IRepositories
 {
     public interface IGenericRepository<T> where T : class
     {
-        Task Insert(T entity);
-        Task InsertRange(IEnumerable<T> entities);
-        Task Delete(object id);
+        Task InsertAsync(T entity);
+        Task InsertRangeAsync(IEnumerable<T> entities);
+        Task DeleteAsync(object id);
+        void Delete(T entity);
         void DeleteRange(IEnumerable<T> entities);
         void Update(T entity);
-        Task<IList<T>> GetAll(
+        Task<IList<T>> GetAllAsync(
             Expression<Func<T, bool>> expression = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             List<string> includes = null);
-        Task<T> Get(Expression<Func<T, bool>> expression = null,
+        Task<T> GetAsync(Expression<Func<T, bool>> expression = null,
             List<string> includes = null);
     }
 }
