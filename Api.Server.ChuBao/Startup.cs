@@ -1,4 +1,6 @@
 ﻿using Api.Server.ChuBao.Data;
+using Api.Server.ChuBao.IRepositories;
+using Api.Server.ChuBao.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +41,9 @@ namespace Api.Server.ChuBao
             {
                 api.SwaggerDoc("v1", new OpenApiInfo { Title = "Service For ChuBao", Version = "v1" });
             });
+
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         }
 
