@@ -1,12 +1,16 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 
 namespace Api.Server.ChuBao
 {
     public class Startup
     {
-        public ConfigurationManager Configuration { get; }
+        public IConfiguration Configuration { get; }
 
-        public Startup(ConfigurationManager configuration)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
