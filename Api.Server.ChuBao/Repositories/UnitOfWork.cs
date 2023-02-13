@@ -17,10 +17,6 @@ namespace Api.Server.ChuBao.Repositories
             this._context = context;
         }
 
-        public Task<int> CommitAsync(AppDbContext context)
-        {
-            throw new System.NotImplementedException();
-        }
 
         public async Task<int> CommitAsync()
         {

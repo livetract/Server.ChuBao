@@ -76,10 +76,5 @@ namespace Api.Server.ChuBao
                 endpoints.MapControllers();
             });
         }
-
-        internal void ConfigureServices(object services)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
