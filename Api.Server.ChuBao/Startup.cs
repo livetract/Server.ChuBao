@@ -1,5 +1,6 @@
 ﻿using Api.Server.ChuBao.Data;
 using Api.Server.ChuBao.IRepositories;
+using Api.Server.ChuBao.Maps;
 using Api.Server.ChuBao.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,7 +31,7 @@ namespace Api.Server.ChuBao
             {
                 options.AddPolicy("api", builder => builder
                 .AllowAnyOrigin()
-                .AllowCredentials()
+                .AllowAnyMethod()
                 .AllowAnyHeader());
             });
 
@@ -41,6 +42,7 @@ namespace Api.Server.ChuBao
             {
                 api.SwaggerDoc("v1", new OpenApiInfo { Title = "Service For ChuBao", Version = "v1" });
             });
+            services.AddAutoMapper(typeof(MapperProfile));
 
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
