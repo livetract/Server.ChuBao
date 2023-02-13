@@ -23,6 +23,7 @@ namespace Api.Server.ChuBao
                 var app = builder.Build();
                 startup.Configure(app, app.Environment);
 
+                // 👇不要改成异步；
                 app.Run();
             }
             catch (Exception ex)
