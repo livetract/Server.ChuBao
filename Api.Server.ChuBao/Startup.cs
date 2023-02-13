@@ -23,6 +23,15 @@ namespace Api.Server.ChuBao
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("api", builder => builder
+                .AllowAnyOrigin()
+                .AllowCredentials()
+                .AllowAnyHeader());
+            });
+
             services.AddDbContext<AppDbContext>(
                 options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ChuBaoDB")));
@@ -51,6 +60,7 @@ namespace Api.Server.ChuBao
             app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
+            app.UseCors("api");
             app.UseStaticFiles();
             app.UseRouting();
 
