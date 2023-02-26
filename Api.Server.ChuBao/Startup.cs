@@ -15,6 +15,7 @@ using System;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Api.Server.ChuBao.Services;
 
 namespace Api.Server.ChuBao
 {
@@ -59,6 +60,7 @@ namespace Api.Server.ChuBao
 
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IAuthManager,  AuthManager>();
 
         }
 
