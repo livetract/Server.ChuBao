@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Api.Server.ChuBao.Services;
+using System.Collections.Generic;
 
 namespace Api.Server.ChuBao
 {
@@ -53,6 +54,28 @@ namespace Api.Server.ChuBao
 
             services.AddSwaggerGen(api =>
             {
+                api.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "使用JWT",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                api.AddSecurityRequirement(new OpenApiSecurityRequirement() {
+                    {
+                        new OpenApiSecurityScheme  
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
+                            Scheme = "Oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                });
+
                 api.SwaggerDoc("v1", new OpenApiInfo { Title = "Service For ChuBao", Version = "v1" });
             });
 
