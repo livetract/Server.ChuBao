@@ -48,17 +48,11 @@ namespace Api.Server.ChuBao
                 options => options
                 .SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<IdDbContext>();
-                //.AddRoleStore<IdDbContext>();
-            //services.AddIdentityCore<IdentityUser>
-            //    (options => options
-            //    .SignIn.RequireConfirmedAccount = true)
-            //    .AddEntityFrameworkStores<IdDbContext>();
 
             services.Configure<IdentityOptions>(options =>
             {
                 // Password settings.
                 options.Password.RequireDigit = true;
-                //options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = true;
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequireUppercase = true;
