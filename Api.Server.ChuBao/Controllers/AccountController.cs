@@ -1,4 +1,5 @@
 ﻿using Api.Server.ChuBao.Models;
+using Api.Server.ChuBao.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -16,23 +17,24 @@ namespace Api.Server.ChuBao.Controllers
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IAuthManager _authManager;
         private readonly ILogger<AccountController> _logger;
         private readonly IMapper _mapper;
 
         public AccountController(
             UserManager<IdentityUser> userManager,
-            //SignInManager<IdentityUser> signInManager,
+            IAuthManager authManager,
             ILogger<AccountController> logger,
             IMapper mapper)
         {
             this._userManager = userManager;
-            //this._signInManager = signInManager;
+            this._authManager = authManager;
             this._logger = logger;
             this._mapper = mapper;
         }
 
         [HttpPost]
-        public async Task<Results<Accepted, BadRequest>> Register(UserDto userDto)
+        public async Task<Results<Accepted, BadRequest>> Register(RegisterUserDto model)
         {
             _logger.LogInformation($"正在验证邮箱");
             if (!ModelState.IsValid)
@@ -41,8 +43,8 @@ namespace Api.Server.ChuBao.Controllers
             }
             try
             {
-                var user = _mapper.Map<IdentityUser>(userDto);
-                var result = await _userManager.CreateAsync(user);
+                var user = _mapper.Map<IdentityUser>(model);
+                var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (!result.Succeeded) 
                 {
@@ -54,10 +56,10 @@ namespace Api.Server.ChuBao.Controllers
                     return TypedResults.BadRequest();
                 }
 
-                await _userManager.AddToRolesAsync(user, userDto.Roles);
+                await _userManager.AddToRolesAsync(user, model.Roles);
 
                 var location = Url.Action(nameof(ContactController.GetContacts));
-                return TypedResults.Accepted(location);
+                return TypedResults.Accepted("");
             }
             catch (Exception ex)
             {
@@ -76,13 +78,12 @@ namespace Api.Server.ChuBao.Controllers
             }
             try
             {
-                var result = await _signInManager.PasswordSignInAsync(userDto.UserName, userDto.Password,false,false);
-                if (!result.Succeeded)
+                if(!await _authManager.ValidateUser(userDto))
                 {
                     return TypedResults.Unauthorized();
-                    //return TypedResults.BadRequest($"用户登录失败。");
                 }
-                return TypedResults.Accepted(Url.Action(nameof(Login),userDto));
+                var token = await _authManager.CreateToken();
+                return TypedResults.Accepted(token);
             }
             catch (Exception ex)
             {

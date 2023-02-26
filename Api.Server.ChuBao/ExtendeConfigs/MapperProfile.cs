@@ -14,6 +14,7 @@ namespace Api.Server.ChuBao.ExtendeConfigs
             CreateMap<Contact, CreateContactDto>().ReverseMap();
 
             CreateMap<IdentityUser, UserDto>().ReverseMap();
+            CreateMap<IdentityUser, RegisterUserDto>().ReverseMap();
         }
     }
 }

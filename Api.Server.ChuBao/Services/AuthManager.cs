@@ -17,7 +17,7 @@ namespace Api.Server.ChuBao.Services
         private readonly IConfiguration _configuration;
 
         private IdentityUser _user;
-
+        
         public AuthManager(
             UserManager<IdentityUser> userManager,
             IConfiguration configuration)
@@ -80,6 +80,7 @@ namespace Api.Server.ChuBao.Services
             {
                 return false;
             }
+            _user = user;
             var result = await _userManager.CheckPasswordAsync(user,userDto.Password);
             return result;
         }

@@ -65,7 +65,7 @@ namespace Api.Server.ChuBao
 
                 api.AddSecurityRequirement(new OpenApiSecurityRequirement() {
                     {
-                        new OpenApiSecurityScheme  
+                        new OpenApiSecurityScheme
                         {
                             Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
                             Scheme = "Oauth2",
