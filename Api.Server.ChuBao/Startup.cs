@@ -1,6 +1,6 @@
 ﻿using Api.Server.ChuBao.Data;
 using Api.Server.ChuBao.IRepositories;
-using Api.Server.ChuBao.Maps;
+using Api.Server.ChuBao.ExtendeConfigs;
 using Api.Server.ChuBao.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -39,20 +39,26 @@ namespace Api.Server.ChuBao
             services.AddDbContext<AppDbContext>(
                 options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ChuBaoDB")));
-            services.AddSwaggerGen(api =>
-            {
-                api.SwaggerDoc("v1", new OpenApiInfo { Title = "Service For ChuBao", Version = "v1" });
-            });
 
-            services.AddIdentityCore<IdentityUser>
-                (options => options
+            services.AddDbContext<IdDbContext>(
+                options =>
+                options.UseSqlServer(Configuration.GetConnectionString("IdentityDB")));
+
+            services.AddIdentity<IdentityUser, IdentityRole>(
+                options => options
                 .SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<AppDbContext>();
+                .AddEntityFrameworkStores<IdDbContext>();
+                //.AddRoleStore<IdDbContext>();
+            //services.AddIdentityCore<IdentityUser>
+            //    (options => options
+            //    .SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<IdDbContext>();
 
             services.Configure<IdentityOptions>(options =>
             {
                 // Password settings.
                 options.Password.RequireDigit = true;
+                //options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = true;
                 options.Password.RequireNonAlphanumeric = true;
                 options.Password.RequireUppercase = true;
@@ -68,6 +74,7 @@ namespace Api.Server.ChuBao
                 options.User.AllowedUserNameCharacters =
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniqueEmail = false;
+
             });
             services.ConfigureApplicationCookie(options =>
             {
@@ -78,6 +85,12 @@ namespace Api.Server.ChuBao
                 options.LoginPath = "/Identity/Account/Login";
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                 options.SlidingExpiration = true;
+            });
+
+
+            services.AddSwaggerGen(api =>
+            {
+                api.SwaggerDoc("v1", new OpenApiInfo { Title = "Service For ChuBao", Version = "v1" });
             });
 
             services.AddAutoMapper(typeof(MapperProfile));
