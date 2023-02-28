@@ -4,17 +4,12 @@ using Api.Server.ChuBao.ExtendeConfigs;
 using Api.Server.ChuBao.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using System;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Api.Server.ChuBao.Services;
 using System.Collections.Generic;
 
@@ -52,9 +47,9 @@ namespace Api.Server.ChuBao
             services.ConfigureIdentity();
             services.ConfigureJwt(Configuration);
 
-            services.AddSwaggerGen(api =>
+            services.AddSwaggerGen(c =>
             {
-                api.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "使用JWT",
                     Name = "Authorization",
@@ -63,7 +58,7 @@ namespace Api.Server.ChuBao
                     Scheme = "Bearer"
                 });
 
-                api.AddSecurityRequirement(new OpenApiSecurityRequirement() {
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement() {
                     {
                         new OpenApiSecurityScheme
                         {
@@ -76,7 +71,7 @@ namespace Api.Server.ChuBao
                     }
                 });
 
-                api.SwaggerDoc("v1", new OpenApiInfo { Title = "Service For ChuBao", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Service For ChuBao", Version = "v1" });
             });
 
             services.AddAutoMapper(typeof(MapperProfile));
