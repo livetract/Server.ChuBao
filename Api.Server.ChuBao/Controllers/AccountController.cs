@@ -34,12 +34,12 @@ namespace Api.Server.ChuBao.Controllers
         }
 
         [HttpPost]
-        public async Task<Results<Accepted, BadRequest>> Register(RegisterUserDto model)
+        public async Task<IActionResult> Register(RegisterUserDto model)
         {
             _logger.LogInformation($"正在验证邮箱");
             if (!ModelState.IsValid)
             {
-                return TypedResults.BadRequest();
+                return BadRequest("It's a error model");
             }
             try
             {
@@ -53,42 +53,42 @@ namespace Api.Server.ChuBao.Controllers
                         ModelState.AddModelError(error.Code, error.Description);
                         _logger.LogError($"{nameof(Register)}-- {ModelState.Values}");
                     }
-                    return TypedResults.BadRequest();
+                    return BadRequest();
                 }
 
                 await _userManager.AddToRolesAsync(user, model.Roles);
 
-                var location = Url.Action(nameof(ContactController.GetContacts));
-                return TypedResults.Accepted("");
+                //var location = Url.Action(nameof(ContactController.GetContacts));
+                return Accepted();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"注册的时候出现了错误：{nameof(Register)}");
-                return TypedResults.BadRequest();
+                return BadRequest();
             }
         }
 
         [HttpPost]
-        public async Task<Results<Accepted, UnauthorizedHttpResult,BadRequest<string>>> Login(UserDto userDto)
+        public async Task<IActionResult> Login(UserDto userDto)
         {
             _logger.LogInformation($"正在验证邮箱");
             if (!ModelState.IsValid)
             {
-                return TypedResults.BadRequest($"{ModelState}模型验证失败。");
+                return BadRequest($"{ModelState}模型验证失败。");
             }
             try
             {
                 if(!await _authManager.ValidateUser(userDto))
                 {
-                    return TypedResults.Unauthorized();
+                    return Unauthorized();
                 }
                 var token = await _authManager.CreateToken();
-                return TypedResults.Accepted(token);
+                return Ok(new {Token = token});
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"登录的时候出现了错误：{nameof(Register)}");
-                return TypedResults.BadRequest($"登录的时候出现了错误：{nameof(Register)}");
+                _logger.LogError(ex, $"登录的时候出现了错误：{nameof(Login)}");
+                return BadRequest($"登录的时候出现了错误：{nameof(Login)}");
             }
         }
 

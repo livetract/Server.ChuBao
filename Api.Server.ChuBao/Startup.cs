@@ -51,26 +51,28 @@ namespace Api.Server.ChuBao
             {
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "使用JWT",
+                    Description = "使用JWT，格式 Bearer[space]Token like 'Bearer 123456'",
                     Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer"
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement() {
+                c.AddSecurityRequirement(
+                    new OpenApiSecurityRequirement() 
                     {
-                        new OpenApiSecurityScheme
                         {
-                            Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
-                            Scheme = "Oauth2",
-                            Name = "Bearer",
-                            In = ParameterLocation.Header
-                        },
-                        new List<string>()
-                    }
-                });
-
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
+                                Scheme = "Oauth2",
+                                Name = "Bearer",
+                                In = ParameterLocation.Header
+                            },
+                            new List<string>()
+                        }
+                    });
+                
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Service For ChuBao", Version = "v1" });
             });
 
@@ -102,8 +104,10 @@ namespace Api.Server.ChuBao
             app.UseHttpsRedirection();
             app.UseCors("api");
             app.UseStaticFiles();
-            app.UseRouting();
+
             app.UseAuthentication();
+            app.UseRouting();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

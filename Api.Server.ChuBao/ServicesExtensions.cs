@@ -55,24 +55,32 @@ namespace Api.Server.ChuBao
         public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("Jwt");
-            var jwtIssuer = configuration.GetSection("Jwt").GetSection("Issuer").Value;
-            var jwtKey = configuration.GetSection("Jwt").GetSection("Key").Value;
+            var issuer = configuration.GetSection("Jwt").GetSection("Issuer").Value;
+            var key = configuration.GetSection("Jwt").GetSection("Secret").Value;
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            })
-                .AddJwtBearer(options =>
+            services.AddAuthentication(
+                options =>
                 {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+                })
+                .AddJwtBearer(
+                options =>
+                {
+                    options.SaveToken = true;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
+                        ValidateAudience = false, //dev
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtIssuer,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+
+                        RequireExpirationTime = false,  // dev
+
+                        ValidIssuer = issuer,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
                     };
                 });
         }

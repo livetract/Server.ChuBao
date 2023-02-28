@@ -40,6 +40,7 @@ namespace Api.Server.ChuBao.Services
             var expiration = DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings.GetSection("Lifetime").Value));
             var token = new JwtSecurityToken(
                 issuer: jwtSettings.GetSection("Issuer").Value,
+                audience:jwtSettings.GetSection("Audience").Value,
                 claims: claims,
                 expires: expiration,
                 signingCredentials: signingCredentials
@@ -67,7 +68,7 @@ namespace Api.Server.ChuBao.Services
 
         private SigningCredentials GetSigningCredentials()
         {
-            var key = _configuration.GetSection("Jwt").GetSection("Key").Value;
+            var key = _configuration.GetSection("Jwt").GetSection("Secret").Value;
             var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
 
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
