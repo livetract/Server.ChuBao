@@ -1,5 +1,6 @@
 ﻿using Api.Server.ChuBao.Data;
 using Api.Server.ChuBao.IRepositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,7 @@ namespace Api.Server.ChuBao.Controllers
             this._logger = logger;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<Results<Ok<IList<Contact>>, NotFound>> GetContacts() 
         {
