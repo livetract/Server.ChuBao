@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Serilog;
 using System;
 
@@ -18,13 +16,17 @@ namespace Api.Server.ChuBao
             {
                 Log.Information("Starting web application...");
 
-                var builder = WebHost.CreateDefaultBuilder(args);
-                
-                _ = builder.UseSerilog();
+                var builder = WebApplication.CreateBuilder(args);
 
-                builder.UseStartup<Startup>();
-                
+
+                builder.Host.UseSerilog();
+
+                var startup = new Startup(builder.Configuration);
+                startup.ConfigureServices(builder.Services);
+
                 var app = builder.Build();
+
+                startup.Configure(app, app.Environment);
 
                 // 👇不要改成异步；
                 app.Run();
