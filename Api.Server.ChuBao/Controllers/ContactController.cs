@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Api.Server.ChuBao.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ContactController : ControllerBase
@@ -26,7 +27,7 @@ namespace Api.Server.ChuBao.Controllers
             this._logger = logger;
         }
 
-        [Authorize]
+
         [HttpGet]
         public async Task<Results<Ok<IList<Contact>>, NotFound>> GetContacts() 
         {
