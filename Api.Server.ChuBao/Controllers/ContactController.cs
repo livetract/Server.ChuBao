@@ -40,7 +40,7 @@ namespace Api.Server.ChuBao.Controllers
 
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<ContactDto>> GetContact([FromRoute] Guid id)
         {
             var entity = await _work.Contacts.GetAsync(i => i.Id == id);
