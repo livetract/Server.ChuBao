@@ -32,7 +32,7 @@ namespace Api.Server.ChuBao.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<List<ContactDto>>> GetContacts() 
+        public async Task<ActionResult<List<ContactDto>>> GetContacts([FromQuery] RequestParams requestParams) 
         {
             try
             {
@@ -48,7 +48,7 @@ namespace Api.Server.ChuBao.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ContactDto>> GetContact(Guid id)
+        public async Task<ActionResult<ContactDto>> GetContact([FromQuery]Guid id)
         {
             try 
             { 
@@ -70,7 +70,7 @@ namespace Api.Server.ChuBao.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateContact(CreateContactDto model)
+        public async Task<IActionResult> CreateContact([FromBody]CreateContactDto model)
         {
             // 本案例不做检查重复值
             if (!ModelState.IsValid)
@@ -101,7 +101,7 @@ namespace Api.Server.ChuBao.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpdateContact(ContactDto model)
+        public async Task<IActionResult> UpdateContact([FromBody]ContactDto model)
         {
             if (!ModelState.IsValid)
             {
@@ -135,7 +135,7 @@ namespace Api.Server.ChuBao.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteContact(Guid id)
+        public async Task<IActionResult> DeleteContact([FromQuery]Guid id)
         {
             try
             {
