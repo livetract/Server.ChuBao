@@ -49,17 +49,23 @@ namespace Api.Server.ChuBao.Controllers
         }
 
         [HttpGet]
-        public async Task<Results<Ok<Contact>, NotFound>> GetContact(Guid id)
+        public async Task<ActionResult<ContactDto>> GetContact(Guid id)
         {
             try 
             { 
-                var item = await _work.Contacts.GetAsync(i => i.Id == id);
-                return item == null ?  TypedResults.NotFound():TypedResults.Ok(item);
+                var entity = await _work.Contacts.GetAsync(i => i.Id == id);
+                if (entity == null)
+                {
+                    _logger.LogWarning($"not found entity -- {id}");
+                    return NotFound();
+                }
+                var dto = _mapper.Map<ContactDto>(entity);
+                return Ok(dto);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Something were wrong in the {nameof(GetContact)}");
-                return TypedResults.NotFound();
+                return BadRequest();
             }
 
         }
