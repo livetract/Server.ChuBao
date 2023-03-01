@@ -3,8 +3,6 @@ using Api.Server.ChuBao.IRepositories;
 using Api.Server.ChuBao.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -34,17 +32,18 @@ namespace Api.Server.ChuBao.Controllers
 
 
         [HttpGet]
-        public async Task<Results<Ok<IList<Contact>>, NotFound>> GetContacts() 
+        public async Task<ActionResult<List<ContactDto>>> GetContacts() 
         {
             try
             {
-                var items =await _work.Contacts.GetAllAsync();
-                return TypedResults.Ok(items);
+                var entities =await _work.Contacts.GetAllAsync();
+                var dtos = _mapper.Map<List<ContactDto>>(entities);
+                return Ok(entities);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Something were wrong in the {nameof(GetContacts)}");
-                return TypedResults.NotFound();
+                return BadRequest();
             }
         }
 
@@ -102,56 +101,63 @@ namespace Api.Server.ChuBao.Controllers
         }
 
         [HttpPut]
-        public async Task<Results<Ok<Contact>, BadRequest<string>>> UpdateContact(Contact contact)
+        public async Task<IActionResult> UpdateContact(ContactDto model)
         {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError($"model is invalid!--{nameof(UpdateContact)}");
+                return BadRequest(ModelState);
+            }
             try
             {
-                var item = await _work.Contacts.GetAsync(q => q.Id == contact.Id);
-                if (item == null)
+                var entity = await _work.Contacts.GetAsync(q => q.Id == model.Id);
+                if (entity == null)
                 {
-                    return TypedResults.BadRequest("所要操作的对象没有找到！");
+                    return BadRequest("所要操作的对象没有找到！");
                 }
-                _work.Contacts.Update(contact);
+                entity = _mapper.Map<Contact>(model);
+                _work.Contacts.Update(entity);
+
                 var result = await _work.CommitAsync();
                 if (result > 0)
                 {
-                    _logger.LogInformation($"Updated contact: {contact.Id}");
-                    return TypedResults.Ok(contact);
+                    _logger.LogInformation($"Updated contact: {model.Id}");
+                    return AcceptedAtAction(nameof(GetContact),new {id = model.Id }, _mapper.Map<ContactDto>(entity));
                 }
                 _logger.LogWarning("更新失败。");
-                return TypedResults.BadRequest("更新失败。");
+                return BadRequest("更新失败。");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Something were wrong in the {nameof(UpdateContact)}");
-                return TypedResults.BadRequest("更新数据错误！");
+                return BadRequest("更新数据错误！");
             }
         }
 
         [HttpDelete]
-        public async Task<Results<Ok<string>, BadRequest<string>>> DeleteContact(Contact contact)
+        public async Task<IActionResult> DeleteContact(Guid id)
         {
             try
             {
-                var item = await _work.Contacts.GetAsync(q => q.Id == contact.Id);
-                if (item == null)
+                var entity = await _work.Contacts.GetAsync(q => q.Id == id);
+                if (entity == null)
                 {
-                    return TypedResults.BadRequest("所要操作的对象没有找到！");
+                    return BadRequest("所要操作的对象没有找到！");
                 }
-                _work.Contacts.Delete(contact);
+                _work.Contacts.Delete(entity);
                 var result = await _work.CommitAsync();
                 if (result > 0)
                 {
-                    _logger.LogInformation($"Deleted contact: {contact.Id}");
-                    return TypedResults.Ok("删除成功。");
+                    _logger.LogInformation($"Deleted contact: {id}");
+                    return NoContent();
                 }
                 _logger.LogWarning("删除失败。");
-                return TypedResults.BadRequest("删除失败。");
+                return BadRequest("删除失败。");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Something were wrong in the {nameof(UpdateContact)}");
-                return TypedResults.BadRequest("删除数据错误！");
+                return BadRequest("删除数据错误！");
             }
         }
     }
