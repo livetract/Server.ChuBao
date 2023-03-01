@@ -1,5 +1,7 @@
-﻿using Api.Server.ChuBao.Data;
+using Api.Server.ChuBao.Data;
 using Api.Server.ChuBao.IRepositories;
+using Api.Server.ChuBao.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -11,19 +13,22 @@ using System.Threading.Tasks;
 
 namespace Api.Server.ChuBao.Controllers
 {
-    [Authorize]
-    [Route("api/[controller]")]
+    
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class ContactController : ControllerBase
     {
         private readonly IUnitOfWork _work;
+        private readonly IMapper _mapper;
         private readonly ILogger _logger;
 
         public ContactController(
             IUnitOfWork unitOfWork,
+            IMapper mapper,
             ILogger<ContactController> logger)
         {
             this._work = unitOfWork;
+            this._mapper = mapper;
             this._logger = logger;
         }
 
@@ -43,7 +48,7 @@ namespace Api.Server.ChuBao.Controllers
             }
         }
 
-        [HttpGet("[action]")]
+        [HttpGet]
         public async Task<Results<Ok<Contact>, NotFound>> GetContact(Guid id)
         {
             try 
@@ -59,30 +64,38 @@ namespace Api.Server.ChuBao.Controllers
 
         }
 
-        [HttpPost("[action]")]
-        public async Task<Results<Created<Contact>, BadRequest<string>>> CreateContact(Contact contact)
+        [HttpPost]
+        public async Task<IActionResult> CreateContact(CreateContactDto model)
         {
+            // 本案例不做检查重复值
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError($"model is invalid!--{nameof(CreateContact)}");
+                return BadRequest(ModelState);
+            }
+
             try
             {
-                var item = await _work.Contacts.GetAsync(q => q.Id == contact.Id);
-                if (item != null) return TypedResults.BadRequest("数据重复！");
-
-                await _work.Contacts.InsertAsync(contact);
+                var entity = _mapper.Map<Contact>(model);
+                entity.Id = Guid.NewGuid();
+                await _work.Contacts.InsertAsync(entity);
                 var result = await _work.CommitAsync();
+
                 if (result > 0)
                 {
                     _logger.LogInformation($"Insert {result} picks to database!");
+                    return CreatedAtAction(nameof(GetContact),new {id = entity.Id},_mapper.Map<ContactDto>(entity));
                 }
-                return TypedResults.Created(Url.Action(nameof(GetContact), contact.Id), contact);
+                return BadRequest();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Something were wrong in the {nameof(GetContact)}");
-                return TypedResults.BadRequest("要添加的数据出现错误！");
+                _logger.LogError(ex, $"Something were wrong in the {nameof(CreateContact)}");
+                return BadRequest("要添加的数据出现错误！");
             }
         }
 
-        [HttpPut("[action]")]
+        [HttpPut]
         public async Task<Results<Ok<Contact>, BadRequest<string>>> UpdateContact(Contact contact)
         {
             try
@@ -109,7 +122,7 @@ namespace Api.Server.ChuBao.Controllers
             }
         }
 
-        [HttpDelete("[action]")]
+        [HttpDelete]
         public async Task<Results<Ok<string>, BadRequest<string>>> DeleteContact(Contact contact)
         {
             try
