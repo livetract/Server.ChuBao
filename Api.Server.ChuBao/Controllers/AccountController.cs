@@ -1,12 +1,9 @@
 ﻿using Api.Server.ChuBao.Models;
 using Api.Server.ChuBao.Services;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Threading.Tasks;
 
 namespace Api.Server.ChuBao.Controllers
@@ -41,31 +38,25 @@ namespace Api.Server.ChuBao.Controllers
             {
                 return BadRequest("It's a error model");
             }
-            try
-            {
-                var user = _mapper.Map<IdentityUser>(model);
-                var result = await _userManager.CreateAsync(user, model.Password);
 
-                if (!result.Succeeded) 
+            var user = _mapper.Map<IdentityUser>(model);
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(error.Code, error.Description);
-                        _logger.LogError($"{nameof(Register)}-- {ModelState.Values}");
-                    }
-                    return BadRequest();
+                    ModelState.AddModelError(error.Code, error.Description);
+                    _logger.LogError($"{nameof(Register)}-- {ModelState.Values}");
                 }
-
-                await _userManager.AddToRolesAsync(user, model.Roles);
-
-                //var location = Url.Action(nameof(ContactController.GetContacts));
-                return Accepted();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"注册的时候出现了错误：{nameof(Register)}");
                 return BadRequest();
             }
+
+            await _userManager.AddToRolesAsync(user, model.Roles);
+
+            //var location = Url.Action(nameof(ContactController.GetContacts));
+            return Accepted();
+
         }
 
         [HttpPost]
@@ -76,20 +67,13 @@ namespace Api.Server.ChuBao.Controllers
             {
                 return BadRequest($"{ModelState}模型验证失败。");
             }
-            try
+
+            if (!await _authManager.ValidateUser(userDto))
             {
-                if(!await _authManager.ValidateUser(userDto))
-                {
-                    return Unauthorized();
-                }
-                var token = await _authManager.CreateToken();
-                return Ok(new {Token = token});
+                return Unauthorized();
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"登录的时候出现了错误：{nameof(Login)}");
-                return BadRequest($"登录的时候出现了错误：{nameof(Login)}");
-            }
+            var token = await _authManager.CreateToken();
+            return Ok(new { Token = token });
         }
 
     }

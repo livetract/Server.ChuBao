@@ -1,9 +1,14 @@
 ﻿using Api.Server.ChuBao.Data;
+using Api.Server.ChuBao.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System;
 using System.Text;
 
@@ -52,7 +57,7 @@ namespace Api.Server.ChuBao
             });
         }
 
-        public static void ConfigureJwt(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var jwtSettings = configuration.GetSection("Jwt");
             var issuer = configuration.GetSection("Jwt").GetSection("Issuer").Value;
@@ -83,6 +88,30 @@ namespace Api.Server.ChuBao
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
                     };
                 });
+        }
+
+        public static void ConfigureExceptionHandler(this IApplicationBuilder app)
+        {
+            app.UseExceptionHandler(
+                error =>
+                {
+                    error.Run(async context =>
+                    {
+                        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        context.Response.ContentType = "application/json";
+                        var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+                        if (contextFeature != null)
+                        {
+                            Log.Error($"Error: {contextFeature.Error}");
+                            await context.Response.WriteAsync(
+                                new Error
+                                {
+                                    StatusCode = context.Response.StatusCode,
+                                    Message = "服务器出现了错误，请重新尝试！"
+                                }.ToString()); ;
+                        }
+                    } );
+                } );
         }
 
     }

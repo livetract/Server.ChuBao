@@ -45,7 +45,7 @@ namespace Api.Server.ChuBao
                 options.UseSqlServer(Configuration.GetConnectionString("IdentityDB")));
 
             services.ConfigureIdentity();
-            services.ConfigureJwt(Configuration);
+            services.ConfigureAuthentication(Configuration);
 
             services.AddSwaggerGen(c =>
             {

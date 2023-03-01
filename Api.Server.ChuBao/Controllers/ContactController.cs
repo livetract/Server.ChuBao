@@ -34,25 +34,17 @@ namespace Api.Server.ChuBao.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ContactDto>>> GetContacts([FromQuery] RequestParams requestParams) 
         {
-            try
-            {
-                var entities =await _work.Contacts.GetAllAsync();
+            throw new Exception();
+            var entities =await _work.Contacts.GetAllAsync();
                 var dtos = _mapper.Map<List<ContactDto>>(entities);
                 return Ok(entities);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something were wrong in the {nameof(GetContacts)}");
-                return BadRequest();
-            }
+
         }
 
         [HttpGet]
-        public async Task<ActionResult<ContactDto>> GetContact([FromQuery]Guid id)
+        public async Task<ActionResult<ContactDto>> GetContact([FromRoute]Guid id)
         {
-            try 
-            { 
-                var entity = await _work.Contacts.GetAsync(i => i.Id == id);
+            var entity = await _work.Contacts.GetAsync(i => i.Id == id);
                 if (entity == null)
                 {
                     _logger.LogWarning($"not found entity -- {id}");
@@ -60,12 +52,7 @@ namespace Api.Server.ChuBao.Controllers
                 }
                 var dto = _mapper.Map<ContactDto>(entity);
                 return Ok(dto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something were wrong in the {nameof(GetContact)}");
-                return BadRequest();
-            }
+
 
         }
 
@@ -78,10 +65,8 @@ namespace Api.Server.ChuBao.Controllers
                 _logger.LogError($"model is invalid!--{nameof(CreateContact)}");
                 return BadRequest(ModelState);
             }
-
-            try
-            {
-                var entity = _mapper.Map<Contact>(model);
+            
+            var entity = _mapper.Map<Contact>(model);
                 entity.Id = Guid.NewGuid();
                 await _work.Contacts.InsertAsync(entity);
                 var result = await _work.CommitAsync();
@@ -92,12 +77,7 @@ namespace Api.Server.ChuBao.Controllers
                     return CreatedAtAction(nameof(GetContact),new {id = entity.Id},_mapper.Map<ContactDto>(entity));
                 }
                 return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something were wrong in the {nameof(CreateContact)}");
-                return BadRequest("要添加的数据出现错误！");
-            }
+
         }
 
         [HttpPut]
@@ -108,8 +88,7 @@ namespace Api.Server.ChuBao.Controllers
                 _logger.LogError($"model is invalid!--{nameof(UpdateContact)}");
                 return BadRequest(ModelState);
             }
-            try
-            {
+
                 var entity = await _work.Contacts.GetAsync(q => q.Id == model.Id);
                 if (entity == null)
                 {
@@ -126,20 +105,13 @@ namespace Api.Server.ChuBao.Controllers
                 }
                 _logger.LogWarning("更新失败。");
                 return BadRequest("更新失败。");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something were wrong in the {nameof(UpdateContact)}");
-                return BadRequest("更新数据错误！");
-            }
+
         }
 
         [HttpDelete]
         public async Task<IActionResult> DeleteContact([FromQuery]Guid id)
         {
-            try
-            {
-                var entity = await _work.Contacts.GetAsync(q => q.Id == id);
+            var entity = await _work.Contacts.GetAsync(q => q.Id == id);
                 if (entity == null)
                 {
                     return BadRequest("所要操作的对象没有找到！");
@@ -153,12 +125,7 @@ namespace Api.Server.ChuBao.Controllers
                 }
                 _logger.LogWarning("删除失败。");
                 return BadRequest("删除失败。");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Something were wrong in the {nameof(UpdateContact)}");
-                return BadRequest("删除数据错误！");
-            }
+
         }
     }
 }
