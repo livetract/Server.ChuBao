@@ -1,4 +1,5 @@
 ﻿using Api.Server.ChuBao.Models;
+using Core.Server.ChuBao.Models;
 using Data.Server.Chubao.Access;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -12,7 +13,6 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Api.Server.ChuBao
 {
@@ -61,9 +61,8 @@ namespace Api.Server.ChuBao
 
         public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            var jwtSettings = configuration.GetSection("Jwt");
-            var issuer = configuration.GetSection("Jwt").GetSection("Issuer").Value;
-            var key = configuration.GetSection("Jwt").GetSection("Secret").Value;
+            services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.Name));
+            var jwtOptions = configuration.GetSection(JwtOptions.Name).Get<JwtOptions>();
 
             services.AddAuthentication(
                 options =>
@@ -77,17 +76,34 @@ namespace Api.Server.ChuBao
                 options =>
                 {
                     options.SaveToken = true;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = false, //dev
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
+                    options.SecurityTokenValidators.Clear();
 
+                    options.TokenValidationParameters =
+                    new TokenValidationParameters
+                    {
+                        //ValidAlgorithms = new[] { SecurityAlgorithms.HmacSha256},
+                        //ValidTypes = new[] {JwtConstants.HeaderType},
+                        ValidateActor = true,
+                        ValidateTokenReplay = true,
+
+                        ValidateIssuer = true,
+                        //ValidIssuer = jwtOptions.Issuer,
+
+                        ValidateAudience = false, //dev
+                        //ValidAudience = jwtOptions.Audience,
+
+                        ValidateLifetime = true,
+
+                        RequireSignedTokens = true,
                         RequireExpirationTime = false,  // dev
 
-                        ValidIssuer = issuer,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+                        ValidateIssuerSigningKey = true,
+                        //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret)),
+                        //NameClaimType = JwtClaimTypes.Name,
+                        //RoleClaimType = JwtClaimTypes.Role,
+                        // 不要在这里面赋值，主要是指定要验证哪些
+
+                        ClockSkew = TimeSpan.Zero
                     };
                 });
         }

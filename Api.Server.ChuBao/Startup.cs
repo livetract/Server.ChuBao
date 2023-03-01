@@ -48,6 +48,7 @@ namespace Api.Server.ChuBao
             services.ConfigureAuthentication(Configuration);
             services.ConfigureSwaggerCust();
 
+
             services.AddAutoMapper(typeof(MapperProfile));
 
 

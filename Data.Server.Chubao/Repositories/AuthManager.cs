@@ -1,6 +1,8 @@
 using Core.Server.ChuBao.DTOs;
+using Core.Server.ChuBao.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -17,6 +19,7 @@ namespace Data.Server.Chubao.Repositories
         private readonly IConfiguration _configuration;
 
         private IdentityUser _user;
+        private JwtOptions _jwtOptions = new JwtOptions();
 
         public AuthManager(
             UserManager<IdentityUser> userManager,
@@ -24,6 +27,7 @@ namespace Data.Server.Chubao.Repositories
         {
             _userManager = userManager;
             _configuration = configuration;
+            _jwtOptions = _configuration.GetSection(JwtOptions.Name).Get<JwtOptions>(); 
         }
         public async Task<string> CreateToken()
         {
@@ -36,13 +40,14 @@ namespace Data.Server.Chubao.Repositories
 
         private JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims)
         {
-            var jwtSettings = _configuration.GetSection("Jwt");
-            var expiration = DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings.GetSection("Lifetime").Value));
+            // 按小时退出,24小时退出
+            var expires = DateTime.Now.AddHours(Convert.ToDouble(_jwtOptions.ExpiresByHours));
+            
             var token = new JwtSecurityToken(
-                issuer: jwtSettings.GetSection("Issuer").Value,
-                audience: jwtSettings.GetSection("Audience").Value,
+                issuer: _jwtOptions.Issuer,
+                audience: _jwtOptions.Audience,
                 claims: claims,
-                expires: expiration,
+                expires: expires,
                 signingCredentials: signingCredentials
                 );
 
@@ -68,7 +73,7 @@ namespace Data.Server.Chubao.Repositories
 
         private SigningCredentials GetSigningCredentials()
         {
-            var key = _configuration.GetSection("Jwt").GetSection("Secret").Value;
+            var key = _jwtOptions.Secret;
             var secret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
 
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
