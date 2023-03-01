@@ -1,6 +1,6 @@
-﻿using Api.Server.ChuBao.Models;
-using Api.Server.ChuBao.Services;
-using AutoMapper;
+﻿using AutoMapper;
+using Core.Server.ChuBao.DTOs;
+using Data.Server.Chubao.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

@@ -1,5 +1,4 @@
-﻿using Api.Server.ChuBao.Data;
-using Api.Server.ChuBao.IRepositories;
+﻿using Data.Server.Chubao.Access;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace Api.Server.ChuBao.Repositories
+namespace Data.Server.Chubao.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
@@ -19,7 +18,7 @@ namespace Api.Server.ChuBao.Repositories
             AppDbContext context
             )
         {
-            this._context = context;
+            _context = context;
             Table = context.Set<T>();
         }
         public async Task DeleteAsync(object id)
@@ -39,7 +38,7 @@ namespace Api.Server.ChuBao.Repositories
         }
 
         public async Task<T> GetAsync(
-            Expression<Func<T, bool>> expression = null, 
+            Expression<Func<T, bool>> expression = null,
             List<string> includes = null)
         {
             IQueryable<T> query = Table;
@@ -54,8 +53,8 @@ namespace Api.Server.ChuBao.Repositories
         }
 
         public async Task<IList<T>> GetAllAsync(
-            Expression<Func<T, bool>> expression = null, 
-            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null, 
+            Expression<Func<T, bool>> expression = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             List<string> includes = null)
         {
             IQueryable<T> query = Table;

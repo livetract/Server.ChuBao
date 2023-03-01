@@ -1,7 +1,7 @@
-﻿using Api.Server.ChuBao.Models;
+using Core.Server.ChuBao.DTOs;
 using System.Threading.Tasks;
 
-namespace Api.Server.ChuBao.Services
+namespace Data.Server.Chubao.Repositories
 {
     public interface IAuthManager
     {

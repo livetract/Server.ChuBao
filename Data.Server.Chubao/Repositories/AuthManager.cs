@@ -1,4 +1,4 @@
-﻿using Api.Server.ChuBao.Models;
+using Core.Server.ChuBao.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +9,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Api.Server.ChuBao.Services
+namespace Data.Server.Chubao.Repositories
 {
     public class AuthManager : IAuthManager
     {
@@ -17,13 +17,13 @@ namespace Api.Server.ChuBao.Services
         private readonly IConfiguration _configuration;
 
         private IdentityUser _user;
-        
+
         public AuthManager(
             UserManager<IdentityUser> userManager,
             IConfiguration configuration)
         {
-            this._userManager = userManager;
-            this._configuration = configuration;
+            _userManager = userManager;
+            _configuration = configuration;
         }
         public async Task<string> CreateToken()
         {
@@ -40,13 +40,13 @@ namespace Api.Server.ChuBao.Services
             var expiration = DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings.GetSection("Lifetime").Value));
             var token = new JwtSecurityToken(
                 issuer: jwtSettings.GetSection("Issuer").Value,
-                audience:jwtSettings.GetSection("Audience").Value,
+                audience: jwtSettings.GetSection("Audience").Value,
                 claims: claims,
                 expires: expiration,
                 signingCredentials: signingCredentials
-                ) ;
+                );
 
-            return token ;
+            return token;
         }
 
         private async Task<List<Claim>> GetClaims()
@@ -82,7 +82,7 @@ namespace Api.Server.ChuBao.Services
                 return false;
             }
             _user = user;
-            var result = await _userManager.CheckPasswordAsync(user,userDto.Password);
+            var result = await _userManager.CheckPasswordAsync(user, userDto.Password);
             return result;
         }
     }

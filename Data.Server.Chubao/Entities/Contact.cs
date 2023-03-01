@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace Api.Server.ChuBao.Data
+namespace Data.Server.ChuBao.Entities
 {
     public class Contact
     {

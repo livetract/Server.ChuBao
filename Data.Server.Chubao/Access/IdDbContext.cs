@@ -1,8 +1,8 @@
-using Api.Server.ChuBao.ExtendeConfigs;
+using Data.Server.Chubao.Configurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Server.ChuBao.Data
+namespace Data.Server.Chubao.Access
 {
     public class IdDbContext : IdentityDbContext
     {

@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Api.Server.ChuBao.Models
+namespace Core.Server.ChuBao.DTOs
 {
     public class UserDto
     {
@@ -11,7 +11,7 @@ namespace Api.Server.ChuBao.Models
 
         [Required]
         [DataType(DataType.Password)]
-        [StringLength(maximumLength:15,ErrorMessage = "请输入{2}至{1}位密码", MinimumLength =6)]
+        [StringLength(maximumLength: 15, ErrorMessage = "请输入{2}至{1}位密码", MinimumLength = 6)]
         public string Password { get; set; }
 
     }

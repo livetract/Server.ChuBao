@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Api.Server.ChuBao.ExtendeConfigs
+namespace Data.Server.Chubao.Configurations
 {
     internal class UserConfiguration : IEntityTypeConfiguration<IdentityUser>
     {

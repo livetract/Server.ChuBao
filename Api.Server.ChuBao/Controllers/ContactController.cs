@@ -1,8 +1,8 @@
-using Api.Server.ChuBao.Data;
-using Api.Server.ChuBao.IRepositories;
 using Api.Server.ChuBao.Models;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+using Core.Server.ChuBao.DTOs;
+using Data.Server.Chubao.Repositories;
+using Data.Server.ChuBao.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -32,11 +32,11 @@ namespace Api.Server.ChuBao.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<List<ContactDto>>> GetContacts([FromQuery] RequestParams requestParams)
+        public async Task<ActionResult<List<ContactDto>>> GetContacts()
         {
             var entities = await _work.Contacts.GetAllAsync();
             var dtos = _mapper.Map<List<ContactDto>>(entities);
-            return Ok(entities);
+            return Ok(dtos);
 
         }
 

@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Data.Server.ChuBao.Entities;
+using Microsoft.EntityFrameworkCore;
 
-namespace Api.Server.ChuBao.Data
+namespace Data.Server.Chubao.Access
 {
     public class AppDbContext : DbContext
     {

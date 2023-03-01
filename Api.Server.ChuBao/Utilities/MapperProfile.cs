@@ -1,16 +1,16 @@
-﻿using Api.Server.ChuBao.Data;
-using Api.Server.ChuBao.Models;
-using AutoMapper;
+﻿using AutoMapper;
+using Core.Server.ChuBao.DTOs;
+using Data.Server.ChuBao.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace Api.Server.ChuBao.ExtendeConfigs
+namespace Api.Server.ChuBao.Utilities
 
 {
     public class MapperProfile : Profile
     {
-        public MapperProfile() 
+        public MapperProfile()
         {
-            CreateMap<Contact, ContactDto>().ReverseMap() ;
+            CreateMap<Contact, ContactDto>().ReverseMap();
             CreateMap<Contact, CreateContactDto>().ReverseMap();
 
             CreateMap<IdentityUser, UserDto>().ReverseMap();

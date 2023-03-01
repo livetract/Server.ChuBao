@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Api.Server.ChuBao.IRepositories
+namespace Data.Server.Chubao.Repositories
 {
     public interface IGenericRepository<T> where T : class
     {

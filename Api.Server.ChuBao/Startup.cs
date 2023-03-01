@@ -1,17 +1,13 @@
-﻿using Api.Server.ChuBao.Data;
-using Api.Server.ChuBao.IRepositories;
-using Api.Server.ChuBao.ExtendeConfigs;
-using Api.Server.ChuBao.Repositories;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using Serilog;
-using Api.Server.ChuBao.Services;
-using System.Collections.Generic;
+using Api.Server.ChuBao.Utilities;
+using Data.Server.Chubao.Access;
+using Data.Server.Chubao.Repositories;
 
 namespace Api.Server.ChuBao
 {
@@ -36,45 +32,21 @@ namespace Api.Server.ChuBao
                 .AllowAnyHeader());
             });
 
+
+            // 分开后，1. 要使用指定程序集，startup是目标， 2. 使用pmc来做迁移，不要忘记-Context AppDbContext之类的
             services.AddDbContext<AppDbContext>(
                 options =>
-                options.UseSqlServer(Configuration.GetConnectionString("ChuBaoDB")));
+                options.UseSqlServer(Configuration.GetConnectionString("ChuBaoDB"), 
+                b => b.MigrationsAssembly(this.GetType().Assembly.FullName)));
 
             services.AddDbContext<IdDbContext>(
                 options =>
-                options.UseSqlServer(Configuration.GetConnectionString("IdentityDB")));
+                options.UseSqlServer(Configuration.GetConnectionString("IdentityDB"), 
+                b => b.MigrationsAssembly(this.GetType().Assembly.FullName)));
 
             services.ConfigureIdentity();
             services.ConfigureAuthentication(Configuration);
-
-            services.AddSwaggerGen(c =>
-            {
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    Description = "使用JWT，格式 Bearer[space]Token like 'Bearer 123456'",
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-
-                c.AddSecurityRequirement(
-                    new OpenApiSecurityRequirement() 
-                    {
-                        {
-                            new OpenApiSecurityScheme
-                            {
-                                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
-                                Scheme = "Oauth2",
-                                Name = "Bearer",
-                                In = ParameterLocation.Header
-                            },
-                            new List<string>()
-                        }
-                    });
-                
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Service For ChuBao", Version = "v1" });
-            });
+            services.ConfigureSwaggerCust();
 
             services.AddAutoMapper(typeof(MapperProfile));
 
@@ -100,6 +72,7 @@ namespace Api.Server.ChuBao
                 app.UseSwaggerUI();
             }
             app.UseSerilogRequestLogging();
+            app.ConfigureExceptionHandler();
 
             app.UseHttpsRedirection();
             app.UseCors("api");

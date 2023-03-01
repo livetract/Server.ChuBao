@@ -1,20 +1,20 @@
-﻿using Api.Server.ChuBao.Data;
-using Api.Server.ChuBao.IRepositories;
+﻿using Data.Server.Chubao.Access;
+using Data.Server.ChuBao.Entities;
 using System;
 using System.Threading.Tasks;
 
-namespace Api.Server.ChuBao.Repositories
+namespace Data.Server.Chubao.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
         private readonly IGenericRepository<Contact> _contacts;
-        public IGenericRepository<Contact> Contacts => 
+        public IGenericRepository<Contact> Contacts =>
             _contacts ?? new GenericRepository<Contact>(_context);
 
         public UnitOfWork(AppDbContext context)
         {
-            this._context = context;
+            _context = context;
         }
 
 

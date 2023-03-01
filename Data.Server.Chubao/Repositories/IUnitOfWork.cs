@@ -1,8 +1,8 @@
-﻿using Api.Server.ChuBao.Data;
+﻿using Data.Server.ChuBao.Entities;
 using System;
 using System.Threading.Tasks;
 
-namespace Api.Server.ChuBao.IRepositories
+namespace Data.Server.Chubao.Repositories
 {
     public interface IUnitOfWork : IDisposable
     {

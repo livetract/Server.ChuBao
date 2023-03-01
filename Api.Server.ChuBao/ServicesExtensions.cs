@@ -1,5 +1,5 @@
-﻿using Api.Server.ChuBao.Data;
-using Api.Server.ChuBao.Models;
+﻿using Api.Server.ChuBao.Models;
+using Data.Server.Chubao.Access;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Api.Server.ChuBao
@@ -88,6 +90,38 @@ namespace Api.Server.ChuBao
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
                     };
                 });
+        }
+
+        public static void ConfigureSwaggerCust(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "使用JWT，格式 Bearer[space]Token like 'Bearer 123456'",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(
+                    new OpenApiSecurityRequirement()
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
+                                Scheme = "Oauth2",
+                                Name = "Bearer",
+                                In = ParameterLocation.Header
+                            },
+                            new List<string>()
+                        }
+                    });
+
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Service For ChuBao", Version = "v1" });
+            });
         }
 
         public static void ConfigureExceptionHandler(this IApplicationBuilder app)
