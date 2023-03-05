@@ -54,7 +54,6 @@ namespace Api.Server.ChuBao.Controllers
 
             await _userManager.AddToRolesAsync(user, model.Roles);
 
-            //var location = Url.Action(nameof(ContactController.GetContacts));
             return Accepted();
 
         }
@@ -73,7 +72,7 @@ namespace Api.Server.ChuBao.Controllers
                 return Unauthorized();
             }
             var token = await _authManager.CreateToken();
-            return Ok(new { Token = token });
+            return Ok(token);
         }
 
     }
