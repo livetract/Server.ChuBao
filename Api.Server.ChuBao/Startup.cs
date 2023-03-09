@@ -8,6 +8,7 @@ using Serilog;
 using Api.Server.ChuBao.Utilities;
 using Data.Server.Chubao.Access;
 using Data.Server.Chubao.Repositories;
+using System;
 
 namespace Api.Server.ChuBao
 {
@@ -37,12 +38,26 @@ namespace Api.Server.ChuBao
             services.AddDbContext<AppDbContext>(
                 options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ChuBaoDB"), 
-                b => b.MigrationsAssembly(this.GetType().Assembly.FullName)));
+                b => 
+                { 
+                    b.EnableRetryOnFailure(
+                    maxRetryCount: 5,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorNumbersToAdd: new int[] {2});
+                    b.MigrationsAssembly(this.GetType().Assembly.FullName);
+                }));
 
             services.AddDbContext<IdDbContext>(
                 options =>
-                options.UseSqlServer(Configuration.GetConnectionString("IdentityDB"), 
-                b => b.MigrationsAssembly(this.GetType().Assembly.FullName)));
+                options.UseSqlServer(Configuration.GetConnectionString("IdentityDB"),
+                 b =>
+                 {
+                     b.EnableRetryOnFailure(
+                     maxRetryCount: 5,
+                     maxRetryDelay: TimeSpan.FromSeconds(30),
+                     errorNumbersToAdd: new int[] { 2 });
+                     b.MigrationsAssembly(this.GetType().Assembly.FullName);
+                 }));
 
             services.ConfigureIdentity();
             services.ConfigureAuthentication(Configuration);
