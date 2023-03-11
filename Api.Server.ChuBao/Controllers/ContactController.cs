@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Api.Server.ChuBao.Controllers
@@ -161,6 +160,57 @@ namespace Api.Server.ChuBao.Controllers
             }
 
             return NoContent();
+        }
+
+        // Contact Marks
+        // 每个联系人创建的时候就有标签
+        // 标签只能修改
+
+        [HttpPost]
+        public async Task<IActionResult> GetContactMark([FromBody] Guid contactId)
+        {
+            if (string.IsNullOrEmpty(contactId.ToString()))
+            {
+                _logger.LogWarning($"传入了一个空值");
+                return BadRequest("传入空值"); 
+            }
+
+            var entity = await _work.Marks.GetAsync(x => x.ContactId == contactId);
+            if (entity == null)
+            {
+                _logger.LogWarning("没有找到对应的联系人");
+                return BadRequest();
+            }
+            var dto = _mapper.Map<MarkDto>(entity);
+
+            return Ok(dto);
+        }
+
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateContactMark([FromBody] MarkDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("传入模型失败");
+                return BadRequest();
+            }
+
+            var entity = await _work.Marks.GetAsync(x => x.Id == model.Id);
+            if (entity == null)
+            {
+                _logger.LogError("找不到这条信息");
+                return NotFound();
+            }
+            entity = _mapper.Map<Mark>(model);
+            _work.Marks.Update(entity);
+            var result = await _work.CommitAsync();
+
+            if (result > 0)
+            {
+                return Accepted(model);
+            }
+            return Problem("服务器问题");
         }
 
     }

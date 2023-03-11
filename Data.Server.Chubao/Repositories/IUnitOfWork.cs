@@ -9,6 +9,7 @@ namespace Data.Server.Chubao.Repositories
     {
         IGenericRepository<Contact> Contacts { get; }
         IGenericRepository<Record> Records { get; }
+        IGenericRepository<Mark> Marks { get; }
         Task<int> CommitAsync();
     }
 }

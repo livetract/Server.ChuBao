@@ -12,12 +12,15 @@ namespace Data.Server.Chubao.Repositories
         public IGenericRepository<Contact> Contacts { get; }
         public IGenericRepository<Record> Records { get; }
 
+        public IGenericRepository<Mark> Marks { get; }
+
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
 
             Contacts = new GenericRepository<Contact>(_context);
             Records = new GenericRepository<Record>(_context);
+            Marks = new GenericRepository<Mark>(_context);
         }
 
 

@@ -19,6 +19,8 @@ namespace Api.Server.ChuBao.Commons
 
             CreateMap<Record, RecordDto>().ReverseMap();
             CreateMap<Record, RecordCreateDto>().ReverseMap();
+
+            CreateMap<Mark, MarkDto>().ReverseMap();
         }
     }
 }

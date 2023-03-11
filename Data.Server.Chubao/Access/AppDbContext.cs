@@ -10,6 +10,7 @@ namespace Data.Server.Chubao.Access
 
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Record> Records { get; set; }
+        public DbSet<Mark> Marks { get; set; }
 
         //public DbSet<ContactRecord> ContactRecords { get; set; }
 

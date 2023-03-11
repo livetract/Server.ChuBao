@@ -9,5 +9,8 @@ namespace Data.Server.Chubao.Entities
         public bool HasArrived { get; set; }
         public bool HasDeposit { get; set; }
         public bool HasContract { get; set; }
+        public bool IsLose { get; set; }
+
+        public Guid ContactId { get; set; }
     }
 }
