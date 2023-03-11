@@ -2,7 +2,6 @@ using Core.Server.ChuBao.DTOs;
 using Core.Server.ChuBao.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -79,15 +78,15 @@ namespace Data.Server.Chubao.Repositories
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
-        public async Task<bool> ValidateUser(UserDto userDto)
+        public async Task<bool> ValidateUser(UserLoginDto model)
         {
-            var user = await _userManager.FindByNameAsync(userDto.UserName);
+            var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null)
             {
                 return false;
             }
             _user = user;
-            var result = await _userManager.CheckPasswordAsync(user, userDto.Password);
+            var result = await _userManager.CheckPasswordAsync(user, model.Password);
             return result;
         }
     }

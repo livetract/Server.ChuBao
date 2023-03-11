@@ -2,7 +2,7 @@
 
 namespace Core.Server.ChuBao.DTOs;
 
-public class CreateContactDto
+public class ContactCreateDto
 {
     public string Name { get; set; }
 

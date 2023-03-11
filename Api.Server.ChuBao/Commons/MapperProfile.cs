@@ -12,13 +12,13 @@ namespace Api.Server.ChuBao.Commons
         public MapperProfile()
         {
             CreateMap<Contact, ContactDto>().ReverseMap();
-            CreateMap<Contact, CreateContactDto>().ReverseMap();
+            CreateMap<Contact, ContactCreateDto>().ReverseMap();
 
-            CreateMap<IdentityUser, UserDto>().ReverseMap();
-            CreateMap<IdentityUser, RegisterUserDto>().ReverseMap();
+            CreateMap<IdentityUser, UserLoginDto>().ReverseMap();
+            CreateMap<IdentityUser, UserRegisterDto>().ReverseMap();
 
             CreateMap<Record, RecordDto>().ReverseMap();
-            CreateMap<Record, CreateRecordDto>().ReverseMap();
+            CreateMap<Record, RecordCreateDto>().ReverseMap();
         }
     }
 }

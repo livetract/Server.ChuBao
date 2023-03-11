@@ -2,7 +2,7 @@
 
 namespace Core.Server.ChuBao.DTOs
 {
-    public class CreateRecordDto
+    public class RecordCreateDto
     {
         public string Content { get; set; }
         public string Booker { get; set; }

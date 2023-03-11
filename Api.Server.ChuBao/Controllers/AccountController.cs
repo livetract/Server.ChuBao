@@ -30,7 +30,7 @@ namespace Api.Server.ChuBao.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterUserDto model)
+        public async Task<IActionResult> Register(UserRegisterDto model)
         {
             _logger.LogInformation($"正在验证邮箱");
             if (!ModelState.IsValid)
@@ -58,7 +58,7 @@ namespace Api.Server.ChuBao.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(UserDto userDto)
+        public async Task<IActionResult> Login(UserLoginDto model)
         {
             _logger.LogInformation($"正在验证邮箱");
             if (!ModelState.IsValid)
@@ -66,7 +66,7 @@ namespace Api.Server.ChuBao.Controllers
                 return BadRequest($"{ModelState}模型验证失败。");
             }
 
-            if (!await _authManager.ValidateUser(userDto))
+            if (!await _authManager.ValidateUser(model))
             {
                 return Unauthorized();
             }

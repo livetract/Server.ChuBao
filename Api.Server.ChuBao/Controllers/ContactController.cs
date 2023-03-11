@@ -57,7 +57,7 @@ namespace Api.Server.ChuBao.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateContact([FromBody] CreateContactDto model)
+        public async Task<IActionResult> CreateContact([FromBody] ContactCreateDto model)
         {
             // 本案例不做检查重复值
             if (!ModelState.IsValid)
@@ -142,7 +142,7 @@ namespace Api.Server.ChuBao.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddContactRecord([FromBody] CreateRecordDto dto)
+        public async Task<IActionResult> AddContactRecord([FromBody] RecordCreateDto dto)
         {
             if (!ModelState.IsValid)
             {
