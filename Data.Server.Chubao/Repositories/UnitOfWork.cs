@@ -1,4 +1,5 @@
 ﻿using Data.Server.Chubao.Access;
+using Data.Server.Chubao.Entities;
 using Data.Server.ChuBao.Entities;
 using System;
 using System.Threading.Tasks;
@@ -11,10 +12,13 @@ namespace Data.Server.Chubao.Repositories
         private readonly IGenericRepository<Contact> _contacts;
         public IGenericRepository<Contact> Contacts =>
             _contacts ?? new GenericRepository<Contact>(_context);
+        public IGenericRepository<Record> Records { get; }
 
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
+
+            Records = new GenericRepository<Record>(_context);
         }
 
 

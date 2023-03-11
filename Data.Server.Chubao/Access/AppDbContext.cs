@@ -11,7 +11,7 @@ namespace Data.Server.Chubao.Access
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Record> Records { get; set; }
 
-        public DbSet<ContactRecord> ContactRecords { get; set; }
+        //public DbSet<ContactRecord> ContactRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

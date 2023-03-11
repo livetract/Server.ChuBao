@@ -21,23 +21,23 @@ namespace Data.Server.Chubao.Repositories
             _context = context;
             Table = context.Set<T>();
         }
-        public async Task DeleteAsync(object id)
+        public virtual async Task DeleteAsync(object id)
         {
             var entity = await Table.FindAsync(id);
             Table.Remove(entity);
         }
 
-        public void Delete(T entity)
+        public virtual void Delete(T entity)
         {
             Table.Remove(entity);
         }
 
-        public void DeleteRange(IEnumerable<T> entities)
+        public virtual void DeleteRange(IEnumerable<T> entities)
         {
             Table.RemoveRange(entities);
         }
 
-        public async Task<T> GetAsync(
+        public virtual async Task<T> GetAsync(
             Expression<Func<T, bool>> expression = null,
             List<string> includes = null)
         {
@@ -52,7 +52,7 @@ namespace Data.Server.Chubao.Repositories
             return await query.AsNoTracking().FirstOrDefaultAsync(expression);
         }
 
-        public async Task<IList<T>> GetAllAsync(
+        public virtual async Task<IList<T>> GetAllAsync(
             Expression<Func<T, bool>> expression = null,
             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null,
             List<string> includes = null)
@@ -80,17 +80,17 @@ namespace Data.Server.Chubao.Repositories
             return await query.AsNoTracking().ToListAsync();
         }
 
-        public async Task InsertAsync(T entity)
+        public virtual async Task InsertAsync(T entity)
         {
             await Table.AddAsync(entity);
         }
 
-        public async Task InsertRangeAsync(IEnumerable<T> entities)
+        public virtual async Task InsertRangeAsync(IEnumerable<T> entities)
         {
             await Table.AddRangeAsync(entities);
         }
 
-        public void Update(T entity)
+        public virtual void Update(T entity)
         {
             Table.Attach(entity);
             Table.Entry(entity).State = EntityState.Modified;

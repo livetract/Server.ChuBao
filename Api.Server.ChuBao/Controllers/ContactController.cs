@@ -1,11 +1,13 @@
 using AutoMapper;
 using Core.Server.ChuBao.DTOs;
+using Data.Server.Chubao.Entities;
 using Data.Server.Chubao.Repositories;
 using Data.Server.ChuBao.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Api.Server.ChuBao.Controllers
@@ -125,5 +127,41 @@ namespace Api.Server.ChuBao.Controllers
             return BadRequest("删除失败。");
 
         }
+
+        // Contact Records
+
+
+        [HttpPost]
+        public async Task<IActionResult> GetContactRecords([FromBody] Guid contactId)
+        {
+            var entities = await _work.Records.GetAllAsync(x => x.ContactId == contactId);
+
+            var dtos = _mapper.Map<List<RecordDto>>(entities);
+
+            return Ok(dtos);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddContactRecord([FromBody] CreateRecordDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var entity = _mapper.Map<Record>(dto);
+            entity.Id = Guid.NewGuid();
+            entity.AddTime = DateTime.Now;
+
+            await _work.Records.InsertAsync(entity);
+            var result = await _work.CommitAsync();
+            if (result > 0)
+            {
+                return Ok();
+            }
+
+            return NoContent();
+        }
+
     }
 }
