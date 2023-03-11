@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace Api.Server.ChuBao.Models
+namespace Api.Server.ChuBao.Commons
 {
     public class Error
     {

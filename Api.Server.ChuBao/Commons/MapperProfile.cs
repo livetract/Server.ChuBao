@@ -4,7 +4,7 @@ using Data.Server.Chubao.Entities;
 using Data.Server.ChuBao.Entities;
 using Microsoft.AspNetCore.Identity;
 
-namespace Api.Server.ChuBao.Utilities
+namespace Api.Server.ChuBao.Commons
 
 {
     public class MapperProfile : Profile

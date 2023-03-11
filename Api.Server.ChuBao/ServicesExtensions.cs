@@ -1,4 +1,4 @@
-﻿using Api.Server.ChuBao.Models;
+﻿using Api.Server.ChuBao.Commons;
 using Core.Server.ChuBao.Models;
 using Data.Server.Chubao.Access;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

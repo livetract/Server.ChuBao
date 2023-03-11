@@ -5,10 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using Api.Server.ChuBao.Utilities;
 using Data.Server.Chubao.Access;
 using Data.Server.Chubao.Repositories;
 using System;
+using Api.Server.ChuBao.Commons;
 
 namespace Api.Server.ChuBao
 {
