@@ -3,6 +3,7 @@ using Core.Server.ChuBao.DTOs;
 using Data.Server.Chubao.Entities;
 using Data.Server.Chubao.Repositories;
 using Data.Server.ChuBao.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -55,6 +56,7 @@ namespace Api.Server.ChuBao.Controllers
 
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateContact([FromBody] ContactCreateDto model)
         {
@@ -68,11 +70,20 @@ namespace Api.Server.ChuBao.Controllers
             var entity = _mapper.Map<Contact>(model);
             entity.Id = Guid.NewGuid();
             await _work.Contacts.InsertAsync(entity);
+
+            // 直接创建联系人标签
+            var markdto = new MarkDto();
+            markdto.Id = Guid.NewGuid();
+            markdto.ContactId = entity.Id;
+            var mark = _mapper.Map<Mark>(markdto);
+            await _work.Marks.InsertAsync(mark);
+
             var result = await _work.CommitAsync();
 
             if (result > 0)
             {
                 _logger.LogInformation($"Insert {result} picks to database!");
+
                 return CreatedAtAction(nameof(GetContact), new { id = entity.Id }, _mapper.Map<ContactDto>(entity));
             }
             return BadRequest();
@@ -179,7 +190,13 @@ namespace Api.Server.ChuBao.Controllers
             if (entity == null)
             {
                 _logger.LogWarning("没有找到对应的联系人");
-                return BadRequest();
+                var markdto = new MarkDto() { ContactId = contactId, Id = Guid.NewGuid()};
+                var mark = _mapper.Map<Mark>(markdto);
+                await _work.Marks.InsertAsync(mark);
+                // 偷懒没有再判断了
+                var result = await _work.CommitAsync();
+                return Ok(markdto);
+                //return BadRequest();
             }
             var dto = _mapper.Map<MarkDto>(entity);
 

@@ -10,6 +10,7 @@ namespace Core.Server.ChuBao.DTOs
         public bool HasDeposit { get; set; } = false;
         public bool HasContract { get; set; } = false;
         public bool IsLose { get; set; } = false;
+        public bool IsAttention { get; set; } = false;
 
         public Guid ContactId { get; set; }
     }
