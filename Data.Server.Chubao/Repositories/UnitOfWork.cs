@@ -9,15 +9,14 @@ namespace Data.Server.Chubao.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
-        private readonly IGenericRepository<Contact> _contacts;
-        public IGenericRepository<Contact> Contacts =>
-            _contacts ?? new GenericRepository<Contact>(_context);
+        public IGenericRepository<Contact> Contacts { get; }
         public IGenericRepository<Record> Records { get; }
 
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
 
+            Contacts = new GenericRepository<Contact>(_context);
             Records = new GenericRepository<Record>(_context);
         }
 
