@@ -12,7 +12,6 @@ namespace Api.Server.ChuBao.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IAuthManager _authManager;
         private readonly ILogger<AccountController> _logger;
