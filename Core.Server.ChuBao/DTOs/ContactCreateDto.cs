@@ -11,4 +11,6 @@ public class ContactCreateDto
     public string Phone { get; set; }
     public string Complex { get; set; }
     public string Door { get; set; }
+
+    public string Booker { get; set; }
 }

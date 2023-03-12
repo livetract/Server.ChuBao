@@ -32,6 +32,9 @@ namespace Api.Server.ChuBao.Controllers
         }
 
 
+        
+
+
         [HttpGet]
         public async Task<ActionResult<List<ContactDto>>> GetContacts()
         {
@@ -40,6 +43,14 @@ namespace Api.Server.ChuBao.Controllers
             return Ok(dtos);
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetContactWithMarks()
+        {
+            var sum = await _work.Contacts.GetContactWithMarksAsync();
+            return Ok(sum);
+        }
+
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ContactDto>> GetContact([FromRoute] Guid id)
@@ -56,7 +67,6 @@ namespace Api.Server.ChuBao.Controllers
 
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateContact([FromBody] ContactCreateDto model)
         {
@@ -66,17 +76,50 @@ namespace Api.Server.ChuBao.Controllers
                 _logger.LogError($"model is invalid!--{nameof(CreateContact)}");
                 return BadRequest(ModelState);
             }
+            
+            var contactId = Guid.NewGuid();
+            var testContact = await _work.Contacts.GetAsync(x => x.Id == contactId);
+            while (testContact != null)
+            {
+                contactId = Guid.NewGuid();
+                testContact = await _work.Contacts.GetAsync(x => x.Id == contactId);
+            }
 
-            var entity = _mapper.Map<Contact>(model);
-            entity.Id = Guid.NewGuid();
-            await _work.Contacts.InsertAsync(entity);
+            var contact = _mapper.Map<Contact>(model);
+            contact.Id = contactId;
+            await _work.Contacts.InsertAsync(contact);
 
             // 直接创建联系人标签
-            var markdto = new MarkDto();
-            markdto.Id = Guid.NewGuid();
-            markdto.ContactId = entity.Id;
-            var mark = _mapper.Map<Mark>(markdto);
+            var markId = Guid.NewGuid();
+            var testMark = await _work.Marks.GetAsync(x => x.Id == markId);
+            while (testMark != null)
+            {
+                markId = Guid.NewGuid();
+                testMark = await _work.Marks.GetAsync(x => x.Id == markId);
+            }
+            var mark = new Mark() 
+            { 
+                Id = markId,
+                ContactId = contact.Id
+            };
             await _work.Marks.InsertAsync(mark);
+
+            // Create Initial Record
+            var recordId = Guid.NewGuid();
+            var testRecord = await _work.Records.GetAsync(x => x.Id == recordId);
+            while (testRecord != null)
+            {
+                recordId = Guid.NewGuid();
+                testRecord = await _work.Records.GetAsync(x => x.Id == recordId);
+            }
+            var record = new Record()
+            {
+                Id = recordId,
+                ContactId = contact.Id,
+                Content = $"创建联系人。",
+                AddTime = DateTime.Now
+            };
+            await _work.Records.InsertAsync(record);
 
             var result = await _work.CommitAsync();
 
@@ -84,7 +127,7 @@ namespace Api.Server.ChuBao.Controllers
             {
                 _logger.LogInformation($"Insert {result} picks to database!");
 
-                return CreatedAtAction(nameof(GetContact), new { id = entity.Id }, _mapper.Map<ContactDto>(entity));
+                return CreatedAtAction(nameof(GetContact), new { id = contact.Id }, _mapper.Map<ContactDto>(contact));
             }
             return BadRequest();
 

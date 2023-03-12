@@ -7,7 +7,7 @@ namespace Data.Server.Chubao.Repositories
 {
     public interface IUnitOfWork : IDisposable
     {
-        IGenericRepository<Contact> Contacts { get; }
+        IContactRepositroy Contacts { get; }
         IGenericRepository<Record> Records { get; }
         IGenericRepository<Mark> Marks { get; }
         Task<int> CommitAsync();
